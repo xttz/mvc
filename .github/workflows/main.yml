@@ -19,3 +19,6 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir:  mvc/public_html/
+          
+          protocol: ftp       # Попробуйте ftp, если не пойдет — смените на ftps
+          timeout: 60000      # Увеличиваем время ожидания ответа до 60 секунд
