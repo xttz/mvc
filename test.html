@@ -1,0 +1,241 @@
+<html>
+<head>
+
+<style type="text/css">
+@media (orientation: portrait)
+{ 
+  body 
+  {
+    font-size:2.7rem;
+    background: PaleGreen;
+  } 
+} 
+
+@media (orientation: landscape)
+{ 
+	.base
+	{  
+  		max-width: 600px;
+	} 
+}
+
+body 
+{
+  font-family: Helvetica, Sans-Serif;
+} 
+
+.base, .container
+{
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-content: space-around;
+  /*background: green;*/
+}
+
+.base
+{  
+  /*max-width: 600px;*/
+  margin: 0 auto;
+}
+
+.item
+{
+  margin: 5px;
+  padding: 5px;
+  flex: 0 1 auto;
+  background: blue;
+  color: white;
+}
+
+.header, .filters
+{
+  margin: 5px;
+  padding: 5px;
+  flex: 0 1 auto;
+  background: red;
+  color: white;
+}
+
+.filters
+{
+  padding: 5px 15px;
+  display: flex;
+}
+
+.item_f
+{
+  margin: 5px;
+  padding: 5px;
+  flex: 0 1 auto;
+  background: blue;
+  color: white;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.variable, .header
+{
+  margin: 5px;
+  padding: 5px;
+  flex: 0 1 auto;
+  background: red;
+  color: white;
+  display: flex;
+}
+
+.params, .computers, .item_h
+{
+  margin: 5px;
+  padding: 5px;
+  flex: 0 1 auto;
+  background: yellow;
+  color: black;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.par, .pc
+{
+  margin: 5px;
+  padding: 5px;
+  flex: 0 1 auto;
+  background: blue;
+  color: white;
+}
+</style>
+</head>
+<body>
+<div class="base" id="base">
+  <div class="filters">
+    <div class="item_f">
+      Имя советника
+    </div>  
+    <div class="item_f">
+      Аккаунт
+    </div>  
+    <div class="item_f">
+      Symbol
+    </div>   
+    <div class="item_f" id="log">
+
+    </div>     
+  </div>   
+  <div class="container">  
+    <div class="item">
+      <div class="header">
+        <div class="item_h">
+          Имя советника
+        </div>  
+        <div class="item_h">
+          Аккаунт
+        </div>  
+        <div class="item_h">
+          Symbol
+        </div>       
+      </div>
+      <div class="variable">
+        <div class="computers">
+          <div class="pc">
+            PC_1
+          </div>    
+          <div class="pc">
+            PC_2
+          </div>          
+        </div>       
+        <div class="params">
+          <div class="par">
+            PARAM 1
+          </div>    
+          <div class="par">
+            PARAM 2
+          </div>  
+          <div class="par">
+            PARAM 3
+          </div>   
+        </div>
+      </div>    
+    </div>
+    <div class="item">
+      <div class="header">
+        <div class="item_h">
+          Имя советника
+        </div>  
+        <div class="item_h">
+          Аккаунт
+        </div>  
+        <div class="item_h">
+          Symbol
+        </div>       
+      </div>
+      <div class="variable">
+        <div class="computers">
+          <div class="pc">
+            PC_1
+          </div>
+        </div>      
+        <div class="params">
+          <div class="par">
+            PARAM 1
+          </div>    
+          <div class="par">
+            PARAM 2
+          </div>  
+          <div class="par">
+            PARAM 3
+          </div>   
+          <div class="par">
+            PARAM 4
+          </div>     
+        </div>
+      </div>    
+    </div>
+    <div class="item">
+      <div class="header">
+        <div class="item_h">
+          Имя советника
+        </div>  
+        <div class="item_h">
+          Аккаунт
+        </div>  
+        <div class="item_h">
+          Symbol
+        </div>       
+      </div>
+      <div class="variable">
+        <div class="computers">
+          <div class="pc">
+            PC_3
+          </div>
+          <div class="pc">
+            PC_4
+          </div>
+          <div class="pc">
+            PC_5
+          </div>        
+        </div>       
+        <div class="params">
+          <div class="par">
+            PARAM 1
+          </div>    
+          <div class="par">
+            PARAM 2
+          </div>   
+        </div>
+      </div>    
+    </div>  
+  </div>
+</div>
+<script>
+window.onload = function()
+{
+ document.getElementById('log').innerText = document.body.clientWidth + ' - ' + document.body.clientHeight; 
+};
+
+document.getElementById('base').onclick = function()
+{
+ document.getElementById('log').innerText = document.body.clientWidth + ' - ' + document.body.clientHeight; 
+};
+</script>
+</body>
+</html>

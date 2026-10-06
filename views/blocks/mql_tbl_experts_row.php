@@ -1,0 +1,8 @@
+<tr class="[class]">
+	<td>
+    	[id]
+    </td>
+    <td>
+    	[name]
+    </td>
+</tr>

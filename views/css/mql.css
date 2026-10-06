@@ -1,0 +1,23 @@
+.exp_tbl 
+	{
+		border: 1px white solid;
+	}
+.exp_tbl td, .exp_tbl th 
+	{
+		border: 1px white solid; 
+		width: 100px; 
+		text-align: center;
+	}
+.table_experts 
+	{
+		background: green; 
+		color: white;
+	}
+header 
+	{
+		color: blue;
+	}
+footer 
+	{
+		color: red;
+	}

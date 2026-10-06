@@ -1,0 +1,23 @@
+# CORS
+Header set Access-Control-Allow-Origin "*"
+
+Options -Indexes
+RewriteEngine On
+
+# существующие файлы (css, js, картинки) отдаются напрямую
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# всё остальное в index.php
+RewriteRule ^ index.php [L,QSA]
+
+# Закрыть служебные каталоги
+RewriteRule ^(classes|controllers|models|views/templates|views/blocks)/ - [F,L]
+RewriteRule ^admin/(controllers|models|views/templates|views/blocks)/ - [F,L]
+
+<Files "loader.js">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header unset Expires
+    </IfModule>
+</Files>
