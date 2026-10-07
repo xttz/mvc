@@ -19,10 +19,23 @@ class Admin_Controller_Index extends Controller_Base
 
         // получить тестовые данные
         $data  = $this->model->Test();
-
-        // отрисовка блока
-        $index_template->block('tbl_data');      
+  
         // отрисовка шаблона
         echo $index_template->view(array('title'=> $data));       
-    }   
+    }  
+
+    function login()
+    {
+        $index_template = new Template_New('default');  
+        $index_template->css('base', 'css');
+        $index_template->js('base', 'js');        
+
+		# включить вывод ошибок
+		if (Registry::rel()->debug) 
+				$index_template->error_enable();
+    
+        // отрисовка шаблона
+        echo $index_template->view(array('title'=> 'Логин'));            
+    }
+    
 }
