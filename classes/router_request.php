@@ -1,91 +1,114 @@
 <?php
+/**
+ * Выбирает контроллер и действие по частям пути из Request.
+ * Адрес сам не разбирает: всё нужное уже лежит в $request->segments.
+ *
+ *   /web/test/5          → Controller_Web::test(),            args = ['5']
+ *   /admin/experts/edit/3 → Admin_Controller_Experts::edit(),  args = ['3']
+ */
 class Router_Request
 {
     private $registry;
-    private $path;
-    
-    function __construct(string $path) 
+    private array $paths = [];   // область => каталог контроллеров
+
+    private const AREAS = [
+        'site'  => 'Controller_',
+        'admin' => 'Admin_Controller_',
+    ];
+
+    public function __construct(string $path, ?string $adminPath = null)
     {
         $this->registry = Registry::rel();
-		$this->setPath($path);
+        $this->setPath('site', $path);
+
+        if ($adminPath !== null) {
+            $this->setPath('admin', $adminPath);
+        }
     }
-    
-    private function setPath($path)
+
+    private function setPath(string $area, string $path): void
     {
         $path = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
-        
-        if (!is_dir($path))
-        {
-            throw new Exception ('Invalid controller path: `' . $path . '`');
+
+        if (!is_dir($path)) {
+            throw new Exception('Invalid controller path: `' . $path . '`');
         }
-        
-        $this->path = $path;
+
+        $this->paths[$area] = $path;
     }
 
-	private function getController()
-	{
-		# путь без строки запроса: "/web/test/5"
-		$path  = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
-		$parts = array_values(array_filter(explode('/', $path), 'strlen'));
-
-		# прямое обращение к /index.php/... не должно ломать разбор
-		if (($parts[0] ?? '') === 'index.php') {
-			array_shift($parts);
-		}
-
-		$controller  = strtolower($parts[0] ?? 'index');
-		$action = strtolower($parts[1] ?? 'index');
-
-		# остальные части адреса, например id: /web/show/5
-		$this->registry->args = array_map('rawurldecode', array_slice($parts, 2));
-
-		# только буквы, цифры и _, первый символ буква
-		if (!preg_match('/^[a-z][a-z0-9_]*$/', $controller) ||
-			!preg_match('/^[a-z][a-z0-9_]*$/', $action)) {
-			$this->notFound();
-		}
-
-		$file = $this->path . $this->registry->controller_prefix . $controller . '.php';
-		if (!is_file($file)) {
-			$this->notFound();
-		}
-
-		return array('action' => $action, 'contr' => $controller, 'file' => $file);
-	}
-    
-	private function notFound()
-	{
-		http_response_code(404);
-		exit('404 Not Found');
-	}	
-	
-    function delegate()
+    private function resolve(): array
     {
-        // Анализируем путь
-        $arr = $this->getController();      
-        
-        $controller = $arr['contr'];
-        $action = $arr['action'];
-        $file = $arr['file']; 
-        
-        // Файл доступен?
-        if (is_readable($file) == false)
-        {
+        $request = $this->registry->request;
+        $parts   = $request->segments;
+        $area    = 'site';
+
+        if (isset($this->paths['admin']) && ($parts[0] ?? '') === 'admin') {
+            array_shift($parts);
+            $area = 'admin';
+        }
+
+        $controller = strtolower($parts[0] ?? 'index');
+        $action     = strtolower($parts[1] ?? 'index');
+        $request->args = array_slice($parts, 2);
+
+        # только буквы, цифры и _, первый символ буква
+        if (!preg_match('/^[a-z][a-z0-9_]*$/', $controller) ||
+            !preg_match('/^[a-z][a-z0-9_]*$/', $action)) {
             $this->notFound();
         }
 
-        // Создаём экземпляр контроллера (ucfirst - переводит первый символ строки в верхний регистр)      
-        $class = 'Controller_' . ucfirst($controller);        
-        $controller = new $class();
-        
-        // Действие доступно?
-        if (is_callable(array($controller, $action)) == false)
-        {
+        $file = $this->paths[$area] . $this->registry->controller_prefix . $controller . '.php';
+        if (!is_file($file)) {
             $this->notFound();
         }
-        
-        // Выполняем действие
+
+        return [
+            'area'       => $area,
+            'controller' => $controller,
+            'action'     => $action,
+            'class'      => self::AREAS[$area] . ucfirst($controller),
+        ];
+    }
+
+    public function delegate(): void
+    {
+        $route = $this->resolve();
+
+        if ($route['area'] === 'admin') {
+            $this->requireAdmin($route['controller']);
+        }
+
+        if (!class_exists($route['class'])) {
+            $this->notFound();
+        }
+
+        $controller = new $route['class']();
+        $action     = $route['action'];
+
+        if (!is_callable([$controller, $action])) {
+            $this->notFound();
+        }
+
         $controller->$action();
     }
+
+    # вход обязателен для всех контроллеров админки, кроме login
+    private function requireAdmin(string $controller): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if ($controller !== 'login' && empty($_SESSION['admin_id'])) {
+            header('Location: /admin/login/');
+            exit;
+        }
+    }
+
+    private function notFound(): void
+    {
+        http_response_code(404);
+        exit('404 Not Found');
+    }
 }
-?>

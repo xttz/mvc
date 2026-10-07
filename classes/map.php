@@ -1,132 +1,95 @@
 <?php
-class Map implements ArrayAccess
+/**
+ * Обёртка над массивом параметров (GET, тело запроса).
+ * Только для чтения: данные запроса не меняются по ходу работы,
+ * а для выборки части параметров есть only() и except().
+ */
+class Map implements ArrayAccess, IteratorAggregate, Countable
 {
-    private $arr;
-    
-    // Защищаем от создания через new Singleton
-    public function __construct(&$arr) 
+    private array $items;
+
+    public function __construct(array $items = [])
     {
-        $this->arr = &$arr;
+        $this->items = $items;
     }
-    // Защищаем от создания через клонирование
-    private function __clone() {}
-    // Защищаем от создания через unserialize
-    private function __wakeup() {}
-    
-    
-    public function set($key, $var)
+
+    # значение по ключу или $default, если ключа нет
+    public function get(string $key, $default = null)
     {
-        if (isset($this->arr[$key]) == true)
-        {
-            throw new Exception('Unable to set var `' . $key . '`. Already set.');
-        }
-        $this->arr[$key] = $var;
-        return $this;
+        return array_key_exists($key, $this->items) ? $this->items[$key] : $default;
     }
-    
-    public function get($key)
+
+    # целое число (для id и подобного)
+    public function int(string $key, int $default = 0): int
     {
-        if (isset($this->arr[$key]) == false)
-        {
-            return null;
-        }
-        return $this->arr[$key];
+        $value = filter_var($this->get($key), FILTER_VALIDATE_INT);
+        return $value === false ? $default : $value;
     }
-    
-    public function remove($key) 
-    {        
-        unset($this->arr[$key]);  
-        return $this;
-    }
-    
-    public function offsetExists($offset)
+
+    public function has(string $key): bool
     {
-        return isset($this->arr[$offset]);
+        return array_key_exists($key, $this->items);
     }
-    
-    public function offsetGet($offset)
+
+    # весь массив
+    public function all(): array
     {
-        return $this->get($offset);
+        return $this->items;
     }
-    
-    public function offsetSet($offset, $value)
+
+    # только перечисленные ключи
+    public function only(array $keys): array
     {
-        $this->set($offset, $value);
+        return array_intersect_key($this->items, array_flip($keys));
     }
-    
-    public function offsetUnset($offset)
+
+    # все, кроме перечисленных ключей
+    public function except(array $keys): array
     {
-        unset($this->arr[$offset]);
+        return array_diff_key($this->items, array_flip($keys));
     }
-    
-    // Перегрузка обращения к свойствам объекта в PHP
+
+    # $map->pc и isset($map->pc)
     public function __get($key)
     {
-        if (isset($this->arr[$key]) == false)
-        {
-            return null;
-        }
-        return $this->arr[$key];
+        return $this->get((string)$key);
     }
-    
-    // Перегрузка обращения к свойствам объекта в PHP
-    public function __set($key, $var)
-    {
-        $this->arr[$key] = $var;
-        return $this;
-    }
-    
-    // Перегрузка удаления по ключу
-    public function unset($key)
-    {
-        $this->remove($key);
-        return $this;
-    }
-    
-    // Перегрузка удаления по массиву ключей
-    public function unset_arr(array $arr_key)
-    {
-        foreach ($arr_key as $key) 
-        {
-            $this->remove($key);
-        }
-        return $this;
-    }
-    
-    // Перегрузка обращения к свойствам объекта в PHP
-    public function add($key)
-    {
-        $this->remove($key);
-        return $this;
-    }
-    
-    // Перегрузка обращения к массиву для циклов
-    public function get_arr()
-    {
-        return $this->arr;
-    }
-    
-    /*
-    // Перегрузка обращения к свойствам объекта в PHP
-    public function __isset($key)
-    {
-        return true;
-    }
-    
-    
-    // Перегрузка обращения к свойствам объекта в PHP
-    public function __unset($key)
-    {
-        return true;
-    }
-    */
-   
-    // Метод применяется для вызова несуществующих методов в контексте объекта
-    function __call($name, $arguments)
-    {
-        echo "Магический метод, вызываемый при перегрузке метода ссылкой на объект\r\n";
-    }
-    
-}
 
-?>
+    public function __isset($key): bool
+    {
+        return isset($this->items[$key]);
+    }
+
+    # $map['pc']
+    public function offsetExists($offset): bool
+    {
+        return isset($this->items[$offset]);
+    }
+
+    public function offsetGet($offset): mixed
+    {
+        return $this->get((string)$offset);
+    }
+
+    public function offsetSet($offset, $value): void
+    {
+        throw new LogicException('Map is read-only');
+    }
+
+    public function offsetUnset($offset): void
+    {
+        throw new LogicException('Map is read-only');
+    }
+
+    # foreach ($map as $key => $value)
+    public function getIterator(): ArrayIterator
+    {
+        return new ArrayIterator($this->items);
+    }
+
+    # count($map)
+    public function count(): int
+    {
+        return count($this->items);
+    }
+}
