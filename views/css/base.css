@@ -1,6 +1,12 @@
+* 
+{
+    margin: 0;
+    padding: 0;
+}
+
 .tbl 
 {
-	background: green; 	
+	background: #30BA8F; 
 	border: 1px white solid;
 }
 
