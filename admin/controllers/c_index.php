@@ -9,7 +9,7 @@ class Admin_Controller_Index extends Controller_Base
     
     function index()
     {  
-        $index_template = new Template_New('default', __DIR__ . '/admin');  
+        $index_template = new Template_New('default', Registry::rel()->site_path . 'admin');  
         $index_template->css('base', 'css');
         $index_template->js('base', 'js');        
 
@@ -22,20 +22,5 @@ class Admin_Controller_Index extends Controller_Base
   
         // отрисовка шаблона
         echo $index_template->view(array('title'=> $data));       
-    }  
-
-    function login()
-    {
-        $index_template = new Template_New('default');  
-        $index_template->css('base', 'css');
-        $index_template->js('base', 'js');        
-
-		# включить вывод ошибок
-		if (Registry::rel()->debug) 
-				$index_template->error_enable();
-    
-        // отрисовка шаблона
-        echo $index_template->view(array('title'=> 'Логин'));            
-    }
-    
+    }    
 }
