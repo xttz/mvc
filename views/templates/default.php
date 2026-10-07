@@ -12,7 +12,7 @@
             	Test Table 
             </h2>
         </header>
-        <div class="table">
+        <div class="content">
             [tbl_data]
         </div>    
         <footer>
