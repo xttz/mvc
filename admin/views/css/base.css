@@ -6,7 +6,7 @@
 
 .content 
 {
-	display: contents;
+	/*display: contents;*/
 	background-color: green;
 	color: white;
 }
