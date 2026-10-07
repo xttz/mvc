@@ -140,4 +140,3 @@ Class Template_New
 	    return strtr($code, $replace);
 	}
 }
-?>

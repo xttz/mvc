@@ -10,4 +10,3 @@ abstract class Model_Base
         $this->db = Registry::rel()->db;
     }
 }
-?>

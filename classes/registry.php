@@ -106,5 +106,3 @@ final class Registry implements ArrayAccess
     }
     
 }
-
-?>
