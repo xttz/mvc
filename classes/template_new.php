@@ -7,13 +7,16 @@ Class Template_New
 	private $mobile_flag;
 	private $dir;
 	private $error_flag;
-
+	private $url;
 	
 	function __construct($layouts, ?string $dir = null) 
 	{
 		$this->layouts = $layouts;
 		$this->mobile_flag = Registry::rel()->mobile;	
 		$this->dir = isset($dir) ? $dir . DIRECTORY_SEPARATOR : Registry::rel()->site_path;
+		# веб-адрес каталога относительно корня сайта: '' для сайта, '/admin' для админки
+		$root = rtrim(Registry::rel()->site_path, '/\\');
+		$this->url = rtrim(str_replace('\\', '/', substr(rtrim($this->dir, '/\\'), strlen($root))), '/');		
 		return $this;
 	}
 	
@@ -66,7 +69,7 @@ Class Template_New
 	        return false;
 	    }
 		
-		$url  = '/views/css/' . rawurlencode($name) . '.css';
+		$url  = $this->url . '/views/css/' . rawurlencode($name) . '.css';
 		$key = $block_name ?? $name;
 	    # добавить блок в массив
 	    $this->blocks[$key] = ($this->blocks[$key] ?? '') . '<link rel="stylesheet" href="' . $url . '">';
@@ -83,7 +86,7 @@ Class Template_New
 	        trigger_error ('JS `' . $name . '` does not exist.', E_USER_NOTICE);
 	        return false;
 	    }
-		$url  = '/views/scripts/' . rawurlencode($name) . '.js';
+		$url  = $this->url . '/views/scripts/' . rawurlencode($name) . '.js';
 		$key = $block_name ?? $name;
 	    # добавить блок в массив
 	    $this->blocks[$key] = ($this->blocks[$key] ?? '') . '<script src="' . $url . '"></script>';
