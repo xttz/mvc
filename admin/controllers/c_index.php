@@ -9,7 +9,7 @@ class Admin_Controller_Index extends Controller_Base
     
     function index()
     {  
-        $index_template = new Template_New('default');  
+        $index_template = new Template_New('default', __DIR__ . '/admin');  
         $index_template->css('base', 'css');
         $index_template->js('base', 'js');        
 
