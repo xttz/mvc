@@ -1,14 +1,25 @@
 <!doctype html>
 <html lang="ru">
-<head>
-    <meta charset="utf-8" />
-    <title>[title]</title>
-    [css]
-    [js]
-</head>
-<body>
-	<form id="form_login" action="/web1" method="post">
-    	<button id="btn_login" type="submit" name="r" value="w">Login</button>
-    </form>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <title>[title]</title>
+        [css]
+        [js]
+    </head>
+    <body>
+        <header>
+            <h2>
+            	Table Experts 
+            </h2>
+        </header>
+        <div class="table_experts">
+            [tbl_data]
+        </div>    
+        <footer>
+         	<h2>
+         		Footer 
+         	</h2>
+        </footer>
+		[error]
+    </body>
 </html>
