@@ -2,7 +2,7 @@
 
 class Admin_Controller_Index extends Controller_Base 
 {
-    function __construct(protected Model_Index $model = new Model_Index())
+    function __construct(protected Admin_Model_Index $model = new Admin_Model_Index())
     {       
         parent::__construct();
     }
