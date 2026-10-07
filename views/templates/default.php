@@ -9,10 +9,10 @@
     <body>
         <header>
             <h2>
-            	Table Experts 
+            	Test Table 
             </h2>
         </header>
-        <div class="table_experts">
+        <div class="table">
             [tbl_data]
         </div>    
         <footer>

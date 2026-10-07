@@ -1,4 +1,4 @@
-<table class="exp_tbl">
+<table class="tbl">
     <tr>
     	<th>
         	ID
@@ -7,5 +7,5 @@
         	Name
         </th>
     </tr>
-	[exp_rows]
+	[data_rows]
 </table>

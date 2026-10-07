@@ -24,7 +24,7 @@ class Controller_Index extends Controller_Base
         $i = 0;
 		foreach ($data as $id_i => $text) 
 		{
-			$index_template->block('mql_tbl_experts_row', array(
+			$index_template->block('tbl_data_row', array(
 				'id'    => $id_i,
 				'name'  => $text,
 				'class' => ($i++ % 2) ? 'even' : 'odd',
@@ -35,7 +35,7 @@ class Controller_Index extends Controller_Base
         // отрисовка блока
         $index_template->block('tbl_data');      
         // отрисовка шаблона
-        echo $index_template->view(array('title'=>'Experts'));       
+        echo $index_template->view(array('title'=>'Test Page'));       
     }
 
     function test()
