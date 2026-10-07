@@ -18,6 +18,7 @@ $registry->model_prefix = $model_prefix;
 $registry->mobile = CheckModileDevice();
 # загрузить router и установить путь к контроллерам
 $registry->router = new Router_Request(__DIR__ . DIRECTORY_SEPARATOR . 'controllers', __DIR__ . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'controllers');
+# $registry->router = new Router_Request(__DIR__ . DIRECTORY_SEPARATOR . 'controllers', __DIR__ . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'controllers');
 # найти соответствующий обработчик
 $registry->router->delegate();
 #echo '<br/>--- FINISH ---';

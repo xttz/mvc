@@ -8,7 +8,7 @@
  */
 class Router_Request
 {
-    private $registry;
+    private Registry $registry;
     private array $paths = [];   // область => каталог контроллеров
 
     private const AREAS = [
@@ -21,7 +21,8 @@ class Router_Request
         $this->registry = Registry::rel();
         $this->setPath('site', $path);
 
-        if ($adminPath !== null) {
+        if ($adminPath !== null) 
+        {
             $this->setPath('admin', $adminPath);
         }
     }
@@ -30,7 +31,8 @@ class Router_Request
     {
         $path = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
 
-        if (!is_dir($path)) {
+        if (!is_dir($path)) 
+        {
             throw new Exception('Invalid controller path: `' . $path . '`');
         }
 
@@ -43,7 +45,8 @@ class Router_Request
         $parts   = $request->segments;
         $area    = 'site';
 
-        if (isset($this->paths['admin']) && ($parts[0] ?? '') === 'admin') {
+        if (isset($this->paths['admin']) && ($parts[0] ?? '') === 'admin') 
+        {
             array_shift($parts);
             $area = 'admin';
         }
@@ -53,13 +56,14 @@ class Router_Request
         $request->args = array_slice($parts, 2);
 
         # только буквы, цифры и _, первый символ буква
-        if (!preg_match('/^[a-z][a-z0-9_]*$/', $controller) ||
-            !preg_match('/^[a-z][a-z0-9_]*$/', $action)) {
+        if (!preg_match('/^[a-z][a-z0-9_]*$/', $controller) || !preg_match('/^[a-z][a-z0-9_]*$/', $action)) 
+        {
             $this->notFound();
         }
 
         $file = $this->paths[$area] . $this->registry->controller_prefix . $controller . '.php';
-        if (!is_file($file)) {
+        if (!is_file($file)) 
+        {
             $this->notFound();
         }
 
@@ -75,18 +79,21 @@ class Router_Request
     {
         $route = $this->resolve();
 
-        if ($route['area'] === 'admin') {
+        if ($route['area'] === 'admin') 
+        {
             $this->requireAdmin($route['controller']);
         }
 
-        if (!class_exists($route['class'])) {
+        if (!class_exists($route['class'])) 
+        {
             $this->notFound();
         }
 
         $controller = new $route['class']();
         $action     = $route['action'];
 
-        if (!is_callable([$controller, $action])) {
+        if (!is_callable([$controller, $action])) 
+        {
             $this->notFound();
         }
 
@@ -96,11 +103,13 @@ class Router_Request
     # вход обязателен для всех контроллеров админки, кроме login
     private function requireAdmin(string $controller): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (session_status() === PHP_SESSION_NONE) 
+        {
             session_start();
         }
 
-        if ($controller !== 'login' && empty($_SESSION['admin_id'])) {
+        if ($controller !== 'login' && empty($_SESSION['admin_id'])) 
+        {
             header('Location: /admin/login/');
             exit;
         }
