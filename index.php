@@ -1,4 +1,11 @@
 <?php # реализация общения с советниками
+
+# заглушка для поиска статики на локальной компьютере
+if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) 
+{
+    return false;
+}
+
 # загрузка базовых функций
 include_once "core.php";
 

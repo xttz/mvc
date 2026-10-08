@@ -1,108 +1,111 @@
 <?php
+
+declare(strict_types=1);
+
+/**
+ * Реестр (Singleton) для хранения общих объектов и значений приложения.
+ *
+ * @implements ArrayAccess<string|int, mixed>
+ */
 final class Registry implements ArrayAccess
 {
-    private static $instance;    
-    private $vars = array();
-    
-    // Защищаем от создания через new Singleton
+    private static ?self $instance = null;
+
+    /** @var array<string|int, mixed> */
+    private array $vars = [];
+
+    // Защищаем от создания через new
     private function __construct() {}
+
     // Защищаем от создания через клонирование
     private function __clone() {}
+
     // Защищаем от создания через unserialize
-	public function __wakeup()
-	{
-		throw new Exception('Cannot unserialize singleton');
-	}
-    
-    // метод для запрета дублирования объекта (Singleton), Возвращает единственный экземпляр класса
-    public static function rel()
+    public function __wakeup(): void
     {
-        if (self::$instance === null) 
-        {
-            self::$instance = new self;
-        }
-        return self::$instance;
+        throw new LogicException('Cannot unserialize singleton');
     }
-    
-    public function set($key, $var)
+
+    // Возвращает единственный экземпляр класса
+    public static function rel(): self
     {
-        if (isset($this->vars[$key]) == true)
-        {
-            throw new Exception('Unable to set var `' . $key . '`. Already set.');
+        return self::$instance ??= new self();
+    }
+
+    public function set(string|int $key, mixed $var): bool
+    {
+        if (isset($this->vars[$key])) {
+            throw new LogicException("Unable to set var `{$key}`. Already set.");
         }
         $this->vars[$key] = $var;
         return true;
     }
-    
-    public function get($key)
+
+    public function get(string|int $key): mixed
     {
-        if (isset($this->vars[$key]) == false)
-        {
-            return null;
-        }
-        return $this->vars[$key];
+        return $this->vars[$key] ?? null;
     }
-    
-    public function remove($key) 
-    {        
-        unset($this->vars[$key]);        
+
+    public function has(string|int $key): bool
+    {
+        return isset($this->vars[$key]);
     }
-    
-    public function offsetExists($offset)
+
+    public function remove(string|int $key): void
+    {
+        unset($this->vars[$key]);
+    }
+
+    // ---- ArrayAccess: $registry['key'] ----
+
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->vars[$offset]);
     }
-    
-    public function offsetGet($offset)
+
+    public function offsetGet(mixed $offset): mixed
     {
-        return $this->get($offset);
+        return $this->vars[$offset] ?? null;
     }
-    
-    public function offsetSet($offset, $value)
+
+    public function offsetSet(mixed $offset, mixed $value): void
     {
+        if ($offset === null) {
+            throw new InvalidArgumentException('Registry key cannot be empty: use $registry[\'key\'] = ...');
+        }
         $this->set($offset, $value);
     }
-    
-    public function offsetUnset($offset)
+
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->vars[$offset]);
     }
-    
-    // Перегрузка обращения к свойствам объекта в PHP
-    public function __get($key)
+
+    // ---- Магические свойства: $registry->key ----
+
+    public function __get(string $key): mixed
     {
-        if (isset($this->vars[$key]) == false)
-        {
-            return null;
-        }
-        return $this->vars[$key];
+        return $this->vars[$key] ?? null;
     }
-    
-    // Перегрузка обращения к свойствам объекта в PHP
-    public function __set($key, $var)
+
+    public function __set(string $key, mixed $var): void
     {
         $this->vars[$key] = $var;
     }
- 
-    
-    // Перегрузка обращения к свойствам объекта в PHP
-    public function __isset($key): bool
-    {       
-		return isset($this->vars[$key]);
-    }
-    
-    
-    // Перегрузка обращения к свойствам объекта в PHP
-	public function __unset($key): void
-	{
-		unset($this->vars[$key]);
-	}
-    
-    
-    // Метод применяется для вызова несуществующих методов в контексте объекта
-    function __call($name, $arguments)
+
+    public function __isset(string $key): bool
     {
-         throw new BadMethodCallException("Метод Registry::$name() не найден\r\n");
+        return isset($this->vars[$key]);
     }
-    
+
+    public function __unset(string $key): void
+    {
+        unset($this->vars[$key]);
+    }
+
+    // Вызов несуществующего метода
+    public function __call(string $name, array $arguments): never
+    {
+        throw new BadMethodCallException("Метод Registry::{$name}() не найден");
+    }
 }
